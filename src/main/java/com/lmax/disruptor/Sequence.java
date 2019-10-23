@@ -19,7 +19,9 @@ import sun.misc.Unsafe;
 
 import com.lmax.disruptor.util.Util;
 
-
+/**
+ * 消除伪共享
+ */
 class LhsPadding
 {
     protected long p1, p2, p3, p4, p5, p6, p7;
