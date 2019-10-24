@@ -40,8 +40,12 @@ class RhsPadding extends Value
  * the ring buffer and event processors.  Support a number
  * of concurrent operations including CAS and order writes.
  *
+ * 并发序列类，用于跟踪环形缓冲区和事件处理器的进程。支持许多并发操作，包括CAS和顺序写。
+ *
  * <p>Also attempts to be more efficient with regards to false
  * sharing by adding padding around the volatile field.
+ *
+ * 还试图通过在volatile字段周围添加填充来提高伪共享的效率。
  */
 public class Sequence extends RhsPadding
 {

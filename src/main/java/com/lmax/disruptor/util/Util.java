@@ -93,6 +93,9 @@ public final class Util
 
     private static final Unsafe THE_UNSAFE;
 
+    /**
+     * 实例化Unsafe
+     */
     static
     {
         try

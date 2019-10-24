@@ -24,6 +24,7 @@ import com.lmax.disruptor.util.Util;
  * Base class for the various sequencer types (single/multi).  Provides
  * common functionality like the management of gating sequences (add/remove) and
  * ownership of the current cursor.
+ * 各种排序器类型(单/多)的基类。提供常用功能，如控制序列的管理(添加/删除)和当前游标的所有权。
  */
 public abstract class AbstractSequencer implements Sequencer
 {

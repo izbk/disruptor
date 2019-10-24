@@ -47,6 +47,7 @@ abstract class SingleProducerSequencerFields extends SingleProducerSequencerPad
  * <p>Coordinator for claiming sequences for access to a data structure while tracking dependent {@link Sequence}s.
  * Not safe for use from multiple threads as it does not implement any barriers.</p>
  *
+ * 协调器，用于声明对数据结构的访问的序列，同时跟踪依赖的{@link Sequence}。从多线程使用不安全，因为它没有实现任何障碍。
  * <p>* Note on {@link Sequencer#getCursor()}:  With this sequencer the cursor value is updated after the call
  * to {@link Sequencer#publish(long)} is made.</p>
  */
@@ -122,21 +123,25 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
         }
 
         long nextValue = this.nextValue;
-
+        // 下一个sequence
         long nextSequence = nextValue + n;
+        // 下一个sequence对应的数组中的位置
         long wrapPoint = nextSequence - bufferSize;
+        // 缓存的所有消费者最小的序号
         long cachedGatingSequence = this.cachedValue;
 
         if (wrapPoint > cachedGatingSequence || cachedGatingSequence > nextValue)
         {
+            // 设置cursor
             cursor.setVolatile(nextValue);  // StoreLoad fence
 
             long minSequence;
+            // 当要获取的数组中的位置大于所有消费者最小的序号，自旋等待
             while (wrapPoint > (minSequence = Util.getMinimumSequence(gatingSequences, nextValue)))
             {
                 LockSupport.parkNanos(1L); // TODO: Use waitStrategy to spin?
             }
-
+            // 缓存消费者最小的序号
             this.cachedValue = minSequence;
         }
 

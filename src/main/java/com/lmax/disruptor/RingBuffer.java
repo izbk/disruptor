@@ -35,6 +35,17 @@ abstract class RingBufferFields<E> extends RingBufferPad
 
     static
     {
+        /**
+         * 数组头部还存储有数组的长度信息，索引访问数组元素时需要知道第一个元素与起始位置的偏移地址，
+         * Unsafe类包含所有的基本数据类型和Object类型的偏移的常量值，名称为ARRAY_***_BASE_OFFSET
+         *
+         * 同时访问数组第i个元素，对应偏移的确定需要乘以一个比例值，即数组中单个元素的长度，
+         * Unsafe中对应的常量为ARRAY_***_INDEX_SCALE
+         *
+         * arrayBaseOffset，获取数组第一个元素的偏移地址。arrayIndexScale，获取数组中元素的增量地址。
+         * arrayBaseOffset与arrayIndexScale配合起来使用，就可以定位数组中每个元素在内存中的位置。
+         *
+         */
         final int scale = UNSAFE.arrayIndexScale(Object[].class);
         if (4 == scale)
         {
@@ -75,7 +86,9 @@ abstract class RingBufferFields<E> extends RingBufferPad
         }
 
         this.indexMask = bufferSize - 1;
+        // 初始化数组
         this.entries = new Object[sequencer.getBufferSize() + 2 * BUFFER_PAD];
+        // 预先分配内存，填充元素为空的event对象
         fill(eventFactory);
     }
 
@@ -87,6 +100,11 @@ abstract class RingBufferFields<E> extends RingBufferPad
         }
     }
 
+    /**
+     * 获取数组元素
+     * @param sequence
+     * @return
+     */
     @SuppressWarnings("unchecked")
     protected final E elementAt(long sequence)
     {
@@ -97,6 +115,8 @@ abstract class RingBufferFields<E> extends RingBufferPad
 /**
  * Ring based store of reusable entries containing the data representing
  * an event being exchanged between event producer and {@link EventProcessor}s.
+ *
+ * 基于循环的可重用项存储，其中包含表示事件生成器和{@link事件处理器}之间正在交换的事件的数据。
  *
  * @param <E> implementation storing the data for sharing during exchange or parallel coordination of an event.
  */
