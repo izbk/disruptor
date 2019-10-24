@@ -19,6 +19,8 @@ package com.lmax.disruptor;
 /**
  * {@link SequenceBarrier} handed out for gating {@link EventProcessor}s on a cursor sequence and optional dependent {@link EventProcessor}(s),
  * using the given WaitStrategy.
+ *
+ * {@link SequenceBarrier}用于控制{@link EventProcessor}在游标序列上的行为，以及可选的从属{@link EventProcessor}(s)，使用给定的等待策略。
  */
 final class ProcessingSequenceBarrier implements SequenceBarrier
 {
@@ -52,14 +54,15 @@ final class ProcessingSequenceBarrier implements SequenceBarrier
         throws AlertException, InterruptedException, TimeoutException
     {
         checkAlert();
-
+        // 等待下一个可用的序列
         long availableSequence = waitStrategy.waitFor(sequence, cursorSequence, dependentSequence, this);
 
+        // 返回可用的序列
         if (availableSequence < sequence)
         {
             return availableSequence;
         }
-
+        // 返回最高已发布的序列
         return sequencer.getHighestPublishedSequence(sequence, availableSequence);
     }
 
@@ -88,6 +91,10 @@ final class ProcessingSequenceBarrier implements SequenceBarrier
         alerted = false;
     }
 
+    /**
+     * alerted为true时抛出AlertException
+     * @throws AlertException
+     */
     @Override
     public void checkAlert() throws AlertException
     {

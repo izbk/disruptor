@@ -39,6 +39,7 @@ public final class BlockingWaitStrategy implements WaitStrategy
             lock.lock();
             try
             {
+                // 可用的序号小于预期的序号
                 while (cursorSequence.get() < sequence)
                 {
                     barrier.checkAlert();

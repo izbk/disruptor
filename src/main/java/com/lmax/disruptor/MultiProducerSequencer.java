@@ -31,6 +31,9 @@ import com.lmax.disruptor.util.Util;
  * <p> * Note on {@link Sequencer#getCursor()}:  With this sequencer the cursor value is updated after the call
  * to {@link Sequencer#next()}, to determine the highest available sequence that can be read, then
  * {@link Sequencer#getHighestPublishedSequence(long, long)} should be used.</p>
+ *
+ * 注意{@link sequences# getCursor()}:使用这个排序器，在调用{@link sequences# next()}之后更新游标值，以确定可以读取的最高可用序列
+ * {@link sequences# geestpublishedsequence (long, long)}应该被使用。
  */
 public final class MultiProducerSequencer extends AbstractSequencer
 {

@@ -230,6 +230,12 @@ public final class SingleProducerSequencer extends SingleProducerSequencerFields
         return sequence <= cursor.get();
     }
 
+    /**
+     * 获取最大的已发布的序号
+     * @param lowerBound
+     * @param availableSequence The sequence to scan to.
+     * @return
+     */
     @Override
     public long getHighestPublishedSequence(long lowerBound, long availableSequence)
     {

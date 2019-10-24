@@ -120,6 +120,7 @@ public final class BatchEventProcessor<T>
                 throw new IllegalStateException("Thread is already running");
             }
         }
+        // 关闭提醒
         sequenceBarrier.clearAlert();
 
         notifyStart();
@@ -138,19 +139,23 @@ public final class BatchEventProcessor<T>
             {
                 try
                 {
+                    // 获取下一个可用的序号
                     final long availableSequence = sequenceBarrier.waitFor(nextSequence);
                     if (batchStartAware != null)
                     {
                         batchStartAware.onBatchStart(availableSequence - nextSequence + 1);
                     }
-
+                    // 期待的下一个序号小于可用的序号，则批量消费这些事件
                     while (nextSequence <= availableSequence)
                     {
+                        // 从序号位置获取event数据
                         event = dataProvider.get(nextSequence);
+                        // 消费数据
                         eventHandler.onEvent(event, nextSequence, nextSequence == availableSequence);
                         nextSequence++;
                     }
 
+                    // 设置序号为下一个可用的序号
                     sequence.set(availableSequence);
                 }
                 catch (final TimeoutException e)
@@ -159,6 +164,9 @@ public final class BatchEventProcessor<T>
                 }
                 catch (final AlertException ex)
                 {
+                    /**
+                     * 捕获SequenceBarrier中的异常，进行处理
+                     */
                     if (running.get() != RUNNING)
                     {
                         break;
